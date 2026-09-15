@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { loadBank, loadModeGallery } from '$lib/data';
+	import { answerPosition } from '$lib/answer-position.svelte';
 	import { balancedMixedBank } from '$lib/engine';
 	import { explainQuestion } from '$lib/explain';
 	import { Session } from '$lib/session.svelte';
@@ -18,9 +19,14 @@
 		title: string;
 		subtitle: string;
 		limit: number | null;
+		lengths?: number[];
 	}
 
-	let { title, subtitle, limit }: Props = $props();
+	let { title, subtitle, limit, lengths }: Props = $props();
+
+	function initialLimit(): number | null {
+		return limit;
+	}
 
 	let loading = $state(true);
 	let error = $state<string | null>(null);
@@ -30,6 +36,7 @@
 	let answerMode = $state<AnswerMode>('continuous');
 	let difficulty = $state<1 | 2>(2);
 	let category = $state<string | null>(null);
+	let questionCount = $state<number | null>(initialLimit());
 	let expanded = $state(false);
 	let tick = $state(0);
 	let runShare = $state<string | undefined>(undefined);
@@ -99,7 +106,7 @@
 			return;
 		}
 		error = null;
-		session.start({ pool, answerMode, limit, category, seed, maxPerCategory: categoryCaps() });
+		session.start({ pool, answerMode, limit: questionCount, category, seed, maxPerCategory: categoryCaps() });
 		started = true;
 		expanded = false;
 		saved = false;
@@ -239,6 +246,24 @@
 				</div>
 			</section>
 
+			{#if lengths && lengths.length > 0}
+				<section class="option-group">
+					<h2>Questions</h2>
+					<div class="options row">
+						{#each lengths as count}
+							<button
+								class="option-btn small"
+								class:active={questionCount === count}
+								onclick={() => (questionCount = count)}
+							>
+								<span class="option-title">{count}</span>
+								<span class="option-desc">questions</span>
+							</button>
+						{/each}
+					</div>
+				</section>
+			{/if}
+
 			<section class="option-group">
 				<h2>Category</h2>
 				<select bind:value={category}>
@@ -255,10 +280,10 @@
 
 			<div class="start-section">
 				<button class="primary start" onclick={start}>
-					{limit === null ? 'Start practice' : `Start ${limit}-question speedrun`}
+					{questionCount === null ? 'Start practice' : `Start ${questionCount}-question speedrun`}
 				</button>
 				<p class="hint">
-					{limit === null
+					{questionCount === null
 						? 'Unlimited questions, drawn from the selected pool.'
 						: 'Timer measures visible question to submit; feedback time is excluded.'}
 				</p>
@@ -280,7 +305,7 @@
 				<span>Score so far {(session.results.score).toFixed(1)}</span>
 				{#if session.phase === 'playing'}<span>Time {elapsedLabel}</span>{/if}
 				<span>{answerMode === 'continuous' ? 'continuous η' : 'interval'}</span>
-				{#if limit === null}
+				{#if session.config.limit === null}
 					<button class="end" onclick={endSession} disabled={session.records.length === 0}>End session</button>
 				{/if}
 			</div>
@@ -301,7 +326,12 @@
 			{:else if currentRecord && explanation}
 				<RevealPanel question={question} record={currentRecord} {explanation} bind:expanded />
 				<div class="continue">
-					<button class="primary" bind:this={nextButton} onclick={next}>
+					<button
+						class="primary action"
+						style="--pos: {answerPosition.fraction}"
+						bind:this={nextButton}
+						onclick={next}
+					>
 						{session.isLast && session.config.limit !== null ? 'See results' : 'Next question'}
 					</button>
 				</div>
@@ -464,5 +494,12 @@
 	.continue {
 		display: flex;
 		justify-content: flex-start;
+		padding: var(--spacing-md);
+		border: 1px solid transparent;
+	}
+
+	.continue .action {
+		width: 10rem;
+		margin-left: calc(var(--pos, 0.5) * (100% - 10rem));
 	}
 </style>

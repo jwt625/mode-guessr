@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { mismatchLossDB, formatLossDB } from '$lib/engine';
+	import { answerPosition } from '$lib/answer-position.svelte';
 	import { INTERVALS } from '$lib/scoring';
 	import type { AnswerMode } from '$lib/types';
 
@@ -18,6 +19,10 @@
 
 	let step = $derived(fine ? 0.0001 : 0.001);
 	let lossText = $derived(formatLossDB(mismatchLossDB(Math.min(1, Math.max(0, guess)))));
+
+	$effect(() => {
+		answerPosition.fraction = mode === 'continuous' ? Math.min(1, Math.max(0, guess)) : 0;
+	});
 
 	function submitContinuous() {
 		if (disabled) return;
@@ -61,7 +66,14 @@
 			</label>
 			<span class="readout">η = {Math.min(1, Math.max(0, guess)).toFixed(4)} · {lossText}</span>
 		</div>
-		<button class="primary" onclick={submitContinuous} disabled={disabled}>Submit</button>
+		<button
+			class="primary action"
+			style="--pos: {answerPosition.fraction}"
+			onclick={submitContinuous}
+			disabled={disabled}
+		>
+			Submit
+		</button>
 		<p class="hint">Enter submits; arrow keys adjust the slider.</p>
 	</div>
 {:else if mode === 'interval'}
@@ -155,6 +167,11 @@
 
 	button.primary {
 		align-self: flex-start;
+	}
+
+	.action {
+		width: 10rem;
+		margin-left: calc(var(--pos, 0.5) * (100% - 10rem));
 	}
 
 	.hint {

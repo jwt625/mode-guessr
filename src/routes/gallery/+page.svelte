@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { loadBank, loadModeGallery } from '$lib/data';
+	import { loadManifest, loadModeGallery, loadPending, streamQuestions } from '$lib/data';
 	import { explainQuestion } from '$lib/explain';
 	import { mismatchLossDB, formatLossDB } from '$lib/engine';
 	import type { CachedQuestion, Manifest, ModeGalleryEntry, ModeGalleryManifest, PendingRecipe } from '$lib/types';
@@ -13,6 +13,8 @@
 	let pending = $state<PendingRecipe[]>([]);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
+	let streamError = $state<string | null>(null);
+	let streamDone = $state(false);
 	let selectedCategory = $state<string | null>(null);
 	let selected = $state<CachedQuestion | null>(null);
 	let revealInModal = $state(false);
@@ -30,22 +32,51 @@
 		selectedCategory === null ? all : all.filter((question) => question.category === selectedCategory)
 	);
 
-	onMount(async () => {
-		try {
-			const bank = await loadBank((input) => fetch(input), base);
-			manifest = bank.manifest;
-			all = bank.questions;
-			pending = bank.pending;
-		} catch (cause) {
-			error = cause instanceof Error ? cause.message : 'Failed to load the shipped bank';
-		} finally {
+	onMount(() => {
+		const fetcher = (input: string) => fetch(input);
+
+		// Analytic bank: paint the grid as soon as the manifest is known, then
+		// append each question as it streams in.
+		(async () => {
+			try {
+				manifest = await loadManifest(fetcher, base);
+			} catch (cause) {
+				error = cause instanceof Error ? cause.message : 'Failed to load the shipped bank';
+				loading = false;
+				return;
+			}
 			loading = false;
-		}
-		try {
-			modeGallery = await loadModeGallery((input) => fetch(input), base);
-		} catch (cause) {
-			modeError = cause instanceof Error ? cause.message : 'Failed to load the mode gallery';
-		}
+			let failures = 0;
+			await streamQuestions(
+				fetcher,
+				manifest.entries,
+				(question) => {
+					all.push(question);
+				},
+				base,
+				8,
+				() => {
+					failures += 1;
+				}
+			);
+			if (failures > 0) streamError = `${failures} question${failures === 1 ? '' : 's'} failed to load.`;
+			streamDone = true;
+			try {
+				pending = await loadPending(fetcher, manifest, base);
+			} catch {
+				pending = [];
+			}
+		})();
+
+		// Waveguide mode gallery is a single larger manifest; load it in
+		// parallel so it never blocks the analytic grid.
+		(async () => {
+			try {
+				modeGallery = await loadModeGallery(fetcher, base);
+			} catch (cause) {
+				modeError = cause instanceof Error ? cause.message : 'Failed to load the mode gallery';
+			}
+		})();
 	});
 
 	function open(question: CachedQuestion) {
@@ -135,6 +166,11 @@
 			</aside>
 
 			<section class="cards">
+				{#if streamError}
+					<p class="stream-note text-error">{streamError}</p>
+				{:else if !streamDone}
+					<p class="stream-note">Loading questions… {all.length} loaded</p>
+				{/if}
 				<div class="sample-grid">
 					{#each filtered as question (question.id)}
 						<button class="card" onclick={() => open(question)}>
@@ -236,6 +272,13 @@
 
 	.hint {
 		font-size: 0.8rem;
+		color: var(--text-muted);
+	}
+
+	.stream-note {
+		margin-bottom: var(--spacing-sm);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
 		color: var(--text-muted);
 	}
 

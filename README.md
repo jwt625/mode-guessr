@@ -7,7 +7,7 @@ Built with [SvelteKit](https://svelte.dev/) and TypeScript, shipped as a static 
 ## Features
 
 - **Gallery** — browse mode pairs with physical axes, geometry overlays and overlap integrands.
-- **Speedrun** — 20 questions: estimate overlap, mismatch loss and the dominant effect, with a transparent score and reveal panel.
+- **Speedrun** — 10 or 20 questions: estimate overlap, mismatch loss and the dominant effect, with a transparent score and reveal panel.
 - **Practice** — unlimited questions from a chosen category with local statistics.
 - **Flash presentation** — every A/B question is shown as a single toggling/flashing panel by default (shared extent and color scale, adjustable rate, manual toggle, Space). Side-by-side is optional, never the default.
 - **Deterministic content** — questions come from a seeded generator plus a shipped analytic example bank, so runs are reproducible.

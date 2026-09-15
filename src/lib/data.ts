@@ -69,6 +69,32 @@ export interface LoadedBank {
 }
 
 /**
+ * Stream the ready analytic questions in bounded-concurrency batches, handing
+ * each one to the caller as soon as it arrives so the UI can paint
+ * incrementally instead of waiting for the full bank. Per-entry failures are
+ * reported through `onError` and do not abort the remaining entries.
+ */
+export async function streamQuestions(
+	fetcher: Fetcher,
+	entries: ManifestEntry[],
+	onQuestion: (question: CachedQuestion) => void,
+	basePath = '',
+	concurrency = 8,
+	onError?: (entry: ManifestEntry, error: Error) => void
+): Promise<void> {
+	const ready = entries.filter((entry) => entry.status === 'ready-analytic');
+	await mapLimit(ready, concurrency, async (entry) => {
+		try {
+			onQuestion(await loadQuestion(fetcher, entry, basePath));
+		} catch (cause) {
+			const error = cause instanceof Error ? cause : new Error(String(cause));
+			if (onError) onError(entry, error);
+			else throw error;
+		}
+	});
+}
+
+/**
  * Load the shipped analytic bank. Ready-only by default; the caller can opt
  * into pending recipes for display, but they never carry a computed answer.
  */

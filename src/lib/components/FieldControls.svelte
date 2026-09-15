@@ -12,11 +12,11 @@
 		showIntegrand: boolean;
 	}
 
-	const components: { id: FieldComponent; label: string; title: string }[] = [
-		{ id: 'intensity', label: 'Intensity', title: '|u|²' },
-		{ id: 'amplitude', label: 'Amplitude', title: '|u|' },
-		{ id: 'real', label: 'Sign', title: 'Re(u): field sign' },
-		{ id: 'phase', label: 'Phase', title: 'arg(u)' }
+	const components: { id: FieldComponent; label: string; title: string; shortcut: string }[] = [
+		{ id: 'intensity', label: 'Intensity', title: '|u|²', shortcut: 'i' },
+		{ id: 'amplitude', label: 'Amplitude', title: '|u|', shortcut: 'a' },
+		{ id: 'real', label: 'Sign', title: 'Re(u): field sign', shortcut: 's' },
+		{ id: 'phase', label: 'Phase', title: 'arg(u)', shortcut: 'p' }
 	];
 
 	let {
@@ -34,17 +34,30 @@
 		component = id;
 		colormap = id === 'phase' ? 'cyclic' : id === 'real' ? 'diverging' : 'magma';
 	}
+
+	function handleKey(event: KeyboardEvent) {
+		if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+		const target = event.target as HTMLElement | null;
+		const tag = target?.tagName;
+		if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable) return;
+		const match = components.find((item) => item.shortcut === event.key.toLowerCase());
+		if (!match) return;
+		event.preventDefault();
+		pickComponent(match.id);
+	}
 </script>
+
+<svelte:window onkeydown={handleKey} />
 
 <div class="controls">
 	<div class="group">
-		<span class="group-label">Field</span>
+		<span class="group-label" title="Keyboard shortcuts: i, a, s, p">Field (i/a/s/p)</span>
 		<div class="buttons">
 			{#each components as item}
 				<button
 					class="chip"
 					class:active={component === item.id}
-					title={item.title}
+					title="{item.title} — press {item.shortcut}"
 					onclick={() => pickComponent(item.id)}
 				>
 					{item.label}

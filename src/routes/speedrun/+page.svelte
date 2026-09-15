@@ -4,6 +4,7 @@
 
 <QuizRunner
 	title="Speedrun"
-	subtitle="Twenty questions: estimate η and mismatch loss, then study the dominant effect."
+	subtitle="Ten or twenty questions: estimate η and mismatch loss, then study the dominant effect."
 	limit={20}
+	lengths={[10, 20]}
 />

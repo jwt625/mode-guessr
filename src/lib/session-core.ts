@@ -217,7 +217,7 @@ export interface ScheduleReport {
  */
 export function scheduleQuestions(pool: CachedQuestion[], options: ScheduleOptions): ScheduleReport {
 	const random = rng(options.seed >>> 0);
-	const target = options.bucketTarget ?? BUCKET_TARGET;
+	const target = options.bucketTarget ?? allocate(options.length);
 	const maxPerCategory = options.maxPerCategory ?? {};
 	const byBucket: CachedQuestion[][] = Array.from({ length: target.length }, () => []);
 	for (const question of shuffle(pool, random)) byBucket[question.bucket]?.push(question);
@@ -237,6 +237,7 @@ export function scheduleQuestions(pool: CachedQuestion[], options: ScheduleOptio
 	let attempts = 0;
 	const shortages: ScheduleReport['shortages'] = [];
 	for (let bucket = 0; bucket < target.length; bucket++) {
+		if (chosen.length >= options.length) break;
 		let need = target[bucket];
 		for (const question of byBucket[bucket]) {
 			if (need <= 0) break;

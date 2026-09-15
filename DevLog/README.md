@@ -13,6 +13,7 @@ Date: 2026-09-13. Preserve [000-initial-discussion.md](000-initial-discussion.md
 | 007 | [Coding: vector solver](coding/007-vector-solver-and-validation.md) | C3 implementation and physics release gates |
 | 008 | [Game: coverage and advanced modes](game-design/008-content-and-advanced-modes.md) | Required 20 cases; advanced backlog |
 | 009 | [Coding: implementation record](coding/009-foundation-results.md) | What was built and measured in this pass |
+| 010 | [Coding: player feedback round](coding/010-player-feedback-round.md) | Gallery streaming, 10-question speedrun, 2 Hz toggle, tracked Submit, field shortcuts |
 
 Execution order: C1 foundation → C2 playable Gaussian speedrun → C3 validated vector solver → C4 numerical scenarios → C5 vector/heterogeneous curriculum → C6 adaptive/optimization modes. Cache work is front-loaded within C1 to make examples concrete. This pass implements the data/analytic/cache foundation, not the entire game or an unvalidated vector solver.
 

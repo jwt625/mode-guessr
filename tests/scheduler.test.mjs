@@ -44,3 +44,12 @@ test('shortages are reported per bucket when the pool is thin', () => {
 	assert.ok(report.shortages.some((entry) => entry.available === 0));
 	assert.equal(report.questions.length, 5);
 });
+
+test('a ten-question length draws ten questions with scaled bucket quotas', () => {
+	const bank = balancedAlignmentBank(10, 6);
+	const report = scheduleQuestions(bank, { seed: 7, length: 10 });
+	assert.equal(report.questions.length, 10);
+	assert.equal(new Set(report.questions.map((q) => q.id)).size, 10);
+	assert.deepEqual(report.bucketCounts, [1, 1, 2, 2, 2, 1, 1]);
+	assert.deepEqual(report.shortages, []);
+});
