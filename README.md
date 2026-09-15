@@ -4,6 +4,10 @@ A browser game and training tool for building intuition about **photonic mode ma
 
 Built with [SvelteKit](https://svelte.dev/) and TypeScript, shipped as a static site. The physics core is dependency-free ES modules so it can run in the browser, in a Node test runner, and in build scripts.
 
+![Every solved waveguide cross-section, cycling with its index inset and scale bar](media/waveguide-cycling.gif)
+
+Every solved waveguide mode in the gallery, cycling in random order with its refractive-index cross-section inset and a physical scale bar. BTO/TFLN hybrid families use isotropic screening indices (not tensor-validated).
+
 ## Features
 
 - **Gallery** — browse mode pairs with physical axes, geometry overlays and overlap integrands.
