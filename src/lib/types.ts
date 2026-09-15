@@ -120,12 +120,28 @@ export interface ModeGalleryEntry {
 	neff: number;
 	confinement: number;
 	residual: number;
-	dimensions: { widthUm: number; heightUm: number; slabUm: number | null };
+	dimensions: {
+		widthUm: number;
+		heightUm: number;
+		slabUm: number | null;
+		filmUm?: number;
+		oxideGapUm?: number;
+		geometryKind?: string;
+	};
 	core: { x0: number; x1: number; y0: number; y1: number };
 	axes: { x0: number; x1: number; y0: number; y1: number; nx: number; ny: number };
 	backgroundIndex: number;
 	indexRegions: { x0: number; x1: number; y0: number; y1: number; index: number; material: string }[];
 	field: number[];
+	/** Present on K011 hybrid entries solved with isotropic screening proxies. */
+	geometryKind?: 'film-over-strip' | 'strip-over-film';
+	releaseEligible?: boolean;
+	screeningProxy?: boolean;
+	evidenceLevel?: string;
+	sourceIds?: string[];
+	assumptions?: string[];
+	crystalOrientationStatus?: string | null;
+	propagationCrystalAxis?: string | null;
 }
 
 export interface ModeGalleryManifest {

@@ -143,6 +143,15 @@
 		<div><dt>neff</dt><dd class="mono">{entry.neff.toFixed(4)}</dd></div>
 		<div><dt>confinement</dt><dd class="mono">{entry.confinement.toFixed(3)}</dd></div>
 		<div><dt>size</dt><dd class="mono">{entry.dimensions.widthUm} × {entry.dimensions.heightUm} µm{entry.dimensions.slabUm ? ` (slab ${entry.dimensions.slabUm})` : ''}</dd></div>
+		{#if entry.geometryKind}
+			<div><dt>stack</dt><dd class="mono">{entry.geometryKind}</dd></div>
+		{/if}
+		{#if entry.dimensions.filmUm != null}
+			<div><dt>film</dt><dd class="mono">{entry.dimensions.filmUm} µm</dd></div>
+		{/if}
+		{#if entry.dimensions.oxideGapUm != null}
+			<div><dt>gap</dt><dd class="mono">{entry.dimensions.oxideGapUm} µm</dd></div>
+		{/if}
 		<div><dt>λ</dt><dd class="mono">{entry.wavelengthUm} µm</dd></div>
 		<div><dt>materials</dt><dd>{entry.materialLabel} / {entry.cladding}</dd></div>
 		<div><dt>residual</dt><dd class="mono">{entry.residual.toExponential(1)}</dd></div>
@@ -152,6 +161,12 @@
 	{/if}
 	{#if entry.residual > 1e-6}
 		<p class="warn">Iteration not fully converged (residual {entry.residual.toExponential(1)}).</p>
+	{/if}
+	{#if entry.screeningProxy}
+		<p class="warn">
+			Hybrid ferroelectric stack solved with isotropic screening indices only; the film tensor is unresolved, so treat
+			neff and the field as qualitative.
+		</p>
 	{/if}
 </div>
 

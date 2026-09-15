@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "hybrid-waveguide-proposals-1",
+  "units": "um except explicitly named degrees/index",
+  "sourcesChecked": "2026-09-14",
+  "status": "specification-only-not-runtime-input",
+  "specification": "DevLog/knowledge-base/011-hybrid-ferroelectric-waveguides.md",
+  "geometry_contract": {
+    "coordinates": "right-handed: x lateral, y vertical, z propagation",
+    "origin": "strip centered at x=0; y=0 at silica/lowest-device-layer interface",
+    "film_extent": "laterally-infinite-through-boundary",
+    "film_etch_um": 0,
+    "strip_residual_slab_um": 0,
+    "sidewall_deg_from_horizontal": 90,
+    "oxide_gap_definition": "vertical edge-to-edge; continuous SiO2 interlayer; omitted at zero",
+    "film-over-strip": "strip y=[0,h] in silica; silica to h+g; film y=[h+g,h+g+t]; cap above film",
+    "strip-over-film": "film y=[0,t]; silica spacer y=[t,t+g]; strip y=[t+g,t+g+h]; cap beside and above strip"
+  },
+  "material_profiles": {
+    "si-reference": { "existing_material_id": "si", "kind": "isotropic" },
+    "sio2-reference": { "existing_material_id": "sio2", "kind": "isotropic" },
+    "air-reference": { "existing_material_id": "air", "kind": "isotropic" },
+    "sin-process-provisional": { "existing_material_id": "sin", "kind": "isotropic", "n_at_1_55_um": 2.0, "status": "process-specific-data-pending", "releaseEligible": false },
+    "ln-uniaxial-1550": { "kind": "uniaxial", "n_o": 2.211, "n_e": 2.137, "imaginary_index": 0, "wavelength_um": 1.55, "source_ids": ["S5"], "status": "fixed-wavelength-literature-model-not-film-fit" },
+    "bto-isotropic-screening-1550": { "kind": "isotropic-proxy", "n": 2.38, "imaginary_index": 0, "wavelength_um": 1.55, "source_ids": ["S1"], "status": "tensor-and-domain-data-pending", "releaseEligible": false }
+  },
+  "sources": {
+    "S1": { "url": "https://www.light-am.com/en/article/doi/10.37188/lam.2024.031", "title": "Towards high quality transferred barium titanate ferroelectric hybrid integrated modulator on silicon", "year": 2024, "locator": "Results/Fig. 1; Methods", "extraction": "Si 0.500 x 0.220; BTO 0.150; residual oxide approximately 0.005; optical BTO n=2.38." },
+    "S2": { "url": "https://doi.org/10.1021/acsphotonics.9b00558", "fulltext_url": "https://arxiv.org/pdf/1912.11081", "title": "Ultra-Low-Power Tuning in Hybrid Barium Titanate-Silicon Nitride Electro-optic Devices on Silicon", "year": 2019, "locator": "PDF pp. 2-3, Fig. 1, Methods", "extraction": "SiN 1.100 x 0.150 deposited above 0.080 BTO; silica clad; PECVD nitride." },
+    "S3": { "url": "https://www.nature.com/articles/s41598-022-23403-6", "title": "110 GHz, 110 mW hybrid silicon-lithium niobate Mach-Zehnder modulator", "year": 2022, "locator": "Theory and design/Fig. 1; Hybrid Si/LN chip fabrication", "extraction": "Si height 0.150; widths 0.275 and 0.650; x-cut LN 0.600; CMP oxide below 0.050, approximately 0.040 for fabricated devices." },
+    "S4": { "url": "https://www.nature.com/articles/s41467-023-39047-7", "title": "A heterogeneously integrated lithium niobate-on-silicon nitride photonic platform", "year": 2023, "locator": "Methods: Waveguide geometry; Fig. 1", "extraction": "x-cut LN 0.300 above SiN; SiN thickness 0.600 or 0.950; oxide interlayer approximately 0.100; width 1.0-2.0." },
+    "S5": { "url": "https://doi.org/10.3390/cryst12101477", "fulltext_url": "https://pdfs.semanticscholar.org/2312/53560005ade160668d9ff6e59d1845735c3b.pdf", "title": "Wafer-Scale Fabrication of Silicon Film on Lithium Niobate on Insulator (LNOI)", "year": 2022, "locator": "Section 2/Figs. 2-3; Section 3", "extraction": "Si-on-LNOI design selects Si 0.340 and LN 0.500; Y propagation, x-cut; width 0.500 selected within stated strip interval. Material platform fabricated; mode behavior simulated." },
+    "S6": { "url": "https://www.nature.com/articles/s41467-025-67927-7", "title": "Breaking dense integration limits: inverse-designed lithium niobate multimode photonic circuits", "year": 2026, "locator": "Waveguide platform; Mode (de)multiplexer; Fabrication processes", "extraction": "SiN and unetched x-cut LN each 0.300; widths 1.000 and 4.300; Z propagation for MUX; air cap; sputtered nitride." }
+  },
+  "presets": [
+    {
+      "id": "bto-over-si", "category": "hybrid", "family": "barium-titanate", "label": "BTO slab above Si strip",
+      "model": "vector-required", "status": "pending-geometry-and-vector-validation", "releaseEligible": false, "wavelength_um": 1.55,
+      "geometry_kind": "film-over-strip", "strip_material": "Si", "film_material": "BaTiO3",
+      "materials": ["Si", "BaTiO3", "SiO2", "air"], "strip_material_profile": "si-reference", "film_material_profile": "bto-isotropic-screening-1550",
+      "cladding": "air", "substrate_model": "semi-infinite-SiO2", "mode": "quasi-TE0", "additional_requested_modes": ["quasi-TM0"],
+      "crystal_orientation_status": "unresolved-for-tensor",
+      "nominal": { "width_um": 0.500, "height_um": 0.220, "film_um": 0.150, "oxide_gap_um": 0.005 },
+      "ranges": { "width_um": [0.40, 0.60], "height_um": [0.20, 0.24], "film_um": [0.08, 0.19], "oxide_gap_um": [0.005, 0.05] },
+      "source_ids": ["S1"], "evidence_level": "paper-anchored-idealization", "range_basis": "educational-design-envelope-not-process-tolerance",
+      "nominal_basis": { "width_um": "S1", "height_um": "S1", "film_um": "S1", "oxide_gap_um": "S1-approximate" },
+      "assumptions": ["Air cap", "Continuous flat film", "No electrodes or finite BOX", "BTO isotropic screening only"]
+    },
+    {
+      "id": "bto-over-sin", "category": "hybrid", "family": "barium-titanate", "label": "BTO slab above SiN strip (exploratory)",
+      "model": "vector-required", "status": "pending-geometry-and-vector-validation", "releaseEligible": false, "wavelength_um": 1.55,
+      "geometry_kind": "film-over-strip", "strip_material": "Si3N4", "film_material": "BaTiO3",
+      "materials": ["Si3N4", "BaTiO3", "SiO2", "air"], "strip_material_profile": "sin-process-provisional", "film_material_profile": "bto-isotropic-screening-1550",
+      "cladding": "air", "substrate_model": "semi-infinite-SiO2", "mode": "quasi-TE0", "additional_requested_modes": ["quasi-TM0"],
+      "crystal_orientation_status": "unresolved-for-tensor",
+      "nominal": { "width_um": 1.100, "height_um": 0.150, "film_um": 0.080, "oxide_gap_um": 0.020 },
+      "ranges": { "width_um": [0.8, 1.5], "height_um": [0.12, 0.25], "film_um": [0.06, 0.15], "oxide_gap_um": [0.005, 0.10] },
+      "source_ids": ["S2"], "evidence_level": "exploratory-inverted-stack", "range_basis": "educational-design-envelope-not-process-tolerance",
+      "nominal_basis": { "width_um": "S2-dimension-reused-in-inverted-stack", "height_um": "S2-dimension-reused-in-inverted-stack", "film_um": "S2-dimension-reused-in-inverted-stack", "oxide_gap_um": "assumed" },
+      "assumptions": ["No matching fabricated stack established by this research", "Selected bonding gap and air cap", "Guidance must be established", "Provisional SiN and BTO indices"]
+    },
+    {
+      "id": "tfln-over-si", "category": "hybrid", "family": "lithium-niobate", "label": "TFLN slab above Si strip",
+      "model": "vector-required", "status": "pending-geometry-and-vector-validation", "releaseEligible": false, "wavelength_um": 1.55,
+      "geometry_kind": "film-over-strip", "strip_material": "Si", "film_material": "LiNbO3-tensor",
+      "materials": ["Si", "LiNbO3-tensor", "SiO2", "air"], "strip_material_profile": "si-reference", "film_material_profile": "ln-uniaxial-1550",
+      "cladding": "air", "substrate_model": "semi-infinite-SiO2", "mode": "quasi-TE0", "additional_requested_modes": ["quasi-TM0"],
+      "cut": "x-cut", "vertical_crystal_axis": "X", "propagation_crystal_axis": "Y", "solver_axes_in_crystal_frame": ["Z", "X", "Y"],
+      "nominal": { "width_um": 0.275, "height_um": 0.150, "film_um": 0.600, "oxide_gap_um": 0.040 },
+      "ranges": { "width_um": [0.25, 0.35], "height_um": [0.13, 0.17], "film_um": [0.55, 0.65], "oxide_gap_um": [0.02, 0.05] },
+      "source_ids": ["S3"], "evidence_level": "paper-anchored-idealization", "range_basis": "educational-design-envelope-not-process-tolerance",
+      "nominal_basis": { "width_um": "S3", "height_um": "S3", "film_um": "S3", "oxide_gap_um": "S3-approximate-fabricated-value" },
+      "assumptions": ["Air cap and no electrodes", "Y propagation selected for educational EO-oriented cross-section", "LN optical constants use S5 profile; no exact S3 reproduction claim"],
+      "variants": [{ "id": "tfln-over-si-wide", "nominal_overrides": { "width_um": 0.650 }, "basis": "S3 transition section width", "source_ids": ["S3"] }]
+    },
+    {
+      "id": "tfln-over-sin", "category": "hybrid", "family": "lithium-niobate", "label": "TFLN slab above SiN strip",
+      "model": "vector-required", "status": "pending-geometry-and-vector-validation", "releaseEligible": false, "wavelength_um": 1.55,
+      "geometry_kind": "film-over-strip", "strip_material": "Si3N4", "film_material": "LiNbO3-tensor",
+      "materials": ["Si3N4", "LiNbO3-tensor", "SiO2", "air"], "strip_material_profile": "sin-process-provisional", "film_material_profile": "ln-uniaxial-1550",
+      "cladding": "air", "substrate_model": "semi-infinite-SiO2", "mode": "quasi-TE0", "additional_requested_modes": ["quasi-TM0"],
+      "cut": "x-cut", "vertical_crystal_axis": "X", "propagation_crystal_axis": "Y", "solver_axes_in_crystal_frame": ["Z", "X", "Y"],
+      "nominal": { "width_um": 1.500, "height_um": 0.600, "film_um": 0.300, "oxide_gap_um": 0.100 },
+      "ranges": { "width_um": [1.0, 2.0], "height_um": [0.55, 0.65], "film_um": [0.25, 0.35], "oxide_gap_um": [0.05, 0.15] },
+      "source_ids": ["S4"], "evidence_level": "paper-anchored-idealization", "range_basis": "educational-design-envelope-not-process-tolerance",
+      "nominal_basis": { "width_um": "selected-within-S4-range", "height_um": "S4", "film_um": "S4", "oxide_gap_um": "S4-approximate" },
+      "assumptions": ["Rectangular SiN", "Air cap", "Y propagation selected", "Process-specific SiN model pending"],
+      "related_legacy_preset": "sin-ln-stack",
+      "variants": [{ "id": "tfln-over-sin-thick", "nominal_overrides": { "height_um": 0.950 }, "basis": "S4 second SiN thickness", "source_ids": ["S4"] }]
+    },
+    {
+      "id": "si-over-bto", "category": "hybrid", "family": "barium-titanate", "label": "Si strip above BTO slab (exploratory)",
+      "model": "vector-required", "status": "pending-geometry-and-vector-validation", "releaseEligible": false, "wavelength_um": 1.55,
+      "geometry_kind": "strip-over-film", "strip_material": "Si", "film_material": "BaTiO3",
+      "materials": ["Si", "BaTiO3", "SiO2", "air"], "strip_material_profile": "si-reference", "film_material_profile": "bto-isotropic-screening-1550",
+      "cladding": "air", "substrate_model": "semi-infinite-SiO2", "mode": "quasi-TE0", "additional_requested_modes": ["quasi-TM0"],
+      "crystal_orientation_status": "unresolved-for-tensor",
+      "nominal": { "width_um": 0.500, "height_um": 0.220, "film_um": 0.150, "oxide_gap_um": 0.0 },
+      "ranges": { "width_um": [0.35, 0.65], "height_um": [0.15, 0.30], "film_um": [0.08, 0.20], "oxide_gap_um": [0.0, 0.0] },
+      "source_ids": ["S1"], "evidence_level": "exploratory-inverted-stack", "range_basis": "educational-design-envelope-not-process-tolerance",
+      "nominal_basis": { "width_um": "S1-dimension-reused-in-inverted-stack", "height_um": "S1-dimension-reused-in-inverted-stack", "film_um": "S1-dimension-reused-in-inverted-stack", "oxide_gap_um": "assumed-direct-contact" },
+      "assumptions": ["Ideal transferred crystalline-Si strip, not deposited amorphous Si", "No matching fabricated stack established by this research", "No bottom Si layer: not a Si/BTO/Si horizontal slot", "BTO isotropic screening only"]
+    },
+    {
+      "id": "sin-over-bto", "category": "hybrid", "family": "barium-titanate", "label": "SiN strip above BTO slab",
+      "model": "vector-required", "status": "pending-geometry-and-vector-validation", "releaseEligible": false, "wavelength_um": 1.55,
+      "geometry_kind": "strip-over-film", "strip_material": "Si3N4", "film_material": "BaTiO3",
+      "materials": ["Si3N4", "BaTiO3", "SiO2"], "strip_material_profile": "sin-process-provisional", "film_material_profile": "bto-isotropic-screening-1550",
+      "cladding": "SiO2", "substrate_model": "semi-infinite-SiO2", "mode": "quasi-TE0", "additional_requested_modes": ["quasi-TM0"],
+      "crystal_orientation_status": "unresolved-for-tensor",
+      "nominal": { "width_um": 1.100, "height_um": 0.150, "film_um": 0.080, "oxide_gap_um": 0.0 },
+      "ranges": { "width_um": [0.8, 1.5], "height_um": [0.12, 0.20], "film_um": [0.06, 0.15], "oxide_gap_um": [0.0, 0.0] },
+      "source_ids": ["S2"], "evidence_level": "paper-anchored-idealization", "range_basis": "educational-design-envelope-not-process-tolerance",
+      "nominal_basis": { "width_um": "S2", "height_um": "S2", "film_um": "S2", "oxide_gap_um": "S2-deposited-contact-idealization" },
+      "assumptions": ["No residual seed/buffer layer modeled", "No electrodes", "S2 supplementary optical-index table not extracted; provisional material profiles"]
+    },
+    {
+      "id": "si-over-tfln", "category": "hybrid", "family": "lithium-niobate", "label": "Si strip above TFLN slab",
+      "model": "vector-required", "status": "pending-geometry-and-vector-validation", "releaseEligible": false, "wavelength_um": 1.55,
+      "geometry_kind": "strip-over-film", "strip_material": "Si", "film_material": "LiNbO3-tensor",
+      "materials": ["Si", "LiNbO3-tensor", "SiO2", "air"], "strip_material_profile": "si-reference", "film_material_profile": "ln-uniaxial-1550",
+      "cladding": "air", "substrate_model": "semi-infinite-SiO2", "mode": "quasi-TE0", "additional_requested_modes": ["quasi-TM0"],
+      "cut": "x-cut", "vertical_crystal_axis": "X", "propagation_crystal_axis": "Y", "solver_axes_in_crystal_frame": ["Z", "X", "Y"],
+      "nominal": { "width_um": 0.500, "height_um": 0.340, "film_um": 0.500, "oxide_gap_um": 0.0 },
+      "ranges": { "width_um": [0.35, 0.55], "height_um": [0.25, 0.34], "film_um": [0.40, 0.60], "oxide_gap_um": [0.0, 0.0] },
+      "source_ids": ["S5"], "evidence_level": "paper-simulation-and-material-platform-anchor", "range_basis": "educational-design-envelope-not-process-tolerance",
+      "nominal_basis": { "width_um": "selected-within-S5-strip-design-interval", "height_um": "S5-design-target", "film_um": "S5", "oxide_gap_um": "idealized-interface" },
+      "assumptions": ["Unetched LN film, not S5 etched-LN coupler section", "Crystalline Si", "No interfacial oxide or finite BOX", "No measured-device loss or single-mode guarantee"]
+    },
+    {
+      "id": "sin-over-tfln", "category": "hybrid", "family": "lithium-niobate", "label": "SiN strip above TFLN slab",
+      "model": "vector-required", "status": "pending-geometry-and-vector-validation", "releaseEligible": false, "wavelength_um": 1.55,
+      "geometry_kind": "strip-over-film", "strip_material": "Si3N4", "film_material": "LiNbO3-tensor",
+      "materials": ["Si3N4", "LiNbO3-tensor", "SiO2", "air"], "strip_material_profile": "sin-process-provisional", "film_material_profile": "ln-uniaxial-1550",
+      "cladding": "air", "substrate_model": "semi-infinite-SiO2", "mode": "quasi-TE0", "additional_requested_modes": ["quasi-TM0"],
+      "cut": "x-cut", "vertical_crystal_axis": "X", "propagation_crystal_axis": "Z", "solver_axes_in_crystal_frame": ["-Y", "X", "Z"],
+      "nominal": { "width_um": 1.000, "height_um": 0.300, "film_um": 0.300, "oxide_gap_um": 0.0 },
+      "ranges": { "width_um": [0.8, 1.4], "height_um": [0.25, 0.35], "film_um": [0.25, 0.35], "oxide_gap_um": [0.0, 0.0] },
+      "source_ids": ["S6"], "evidence_level": "paper-anchored-idealization", "range_basis": "educational-design-envelope-not-process-tolerance",
+      "nominal_basis": { "width_um": "S6", "height_um": "S6", "film_um": "S6", "oxide_gap_um": "S6-deposited-contact-idealization" },
+      "assumptions": ["Semi-infinite silica replaces finite BOX/Si", "Provisional SiN profile rather than measured sputtered-film index", "LN constants use S5 profile"],
+      "variants": [
+        { "id": "sin-over-tfln-wide", "nominal_overrides": { "width_um": 4.300 }, "additional_requested_modes": ["quasi-TE1", "quasi-TE2", "quasi-TM0"], "basis": "S6 multimode port width", "source_ids": ["S6"] },
+        { "id": "sin-over-tfln-y", "propagation_crystal_axis": "Y", "solver_axes_in_crystal_frame": ["Z", "X", "Y"], "basis": "Chosen orientation comparison at identical nominal geometry", "source_ids": ["S6"] }
+      ]
+    }
+  ]
+}

@@ -113,7 +113,7 @@ function viewOf(entry: ModeGalleryEntry): StoredFieldView {
 
 const PROVENANCE = {
 	cacheVersion: 'cache-1',
-	generatorVersion: 'waveguide-2',
+	generatorVersion: 'waveguide-3',
 	presetsVersion: 'presets-1',
 	presetsHash: 'runtime',
 	examplesHash: 'runtime'
@@ -167,7 +167,11 @@ export function createWaveguideQuestions(entries: ModeGalleryEntry[], options: W
 		used.add([a.id, b.id].sort().join('|'));
 		const eta = overlapStored(toGrid(a), toGrid(b));
 		const explanation = `Two independently solved guides: ${a.id} (${a.modeLabel}) vs ${b.id} (${b.modeLabel}). Their normalized mode overlap is η ${eta.toFixed(3)}.`;
-		questions.push(makeQuestion(a, b, viewOf(a), viewOf(b), eta, explanation, 'waveguide-overlap', index));
+		const hybrid = a.screeningProxy || b.screeningProxy;
+		const note = hybrid
+			? 'Scalar quasi-TE FEM fields; hybrid ferroelectric stacks use isotropic screening proxies (not tensor-validated). Experimental, not full-vector.'
+			: 'Scalar quasi-TE FEM fields; experimental, not full-vector.';
+		questions.push(makeQuestion(a, b, viewOf(a), viewOf(b), eta, explanation, 'waveguide-overlap', index, note));
 	}
 	return questions;
 }
@@ -180,7 +184,8 @@ function makeQuestion(
 	eta: number,
 	explanation: string,
 	category: string,
-	index: number
+	index: number,
+	note: string
 ): CachedQuestion {
 	const loss = mismatchLoss(eta);
 	return {
@@ -190,9 +195,9 @@ function makeQuestion(
 		category,
 		status: 'ready-analytic',
 		model: 'scalar-waveguide-2d',
-		generatorVersion: 'waveguide-2',
+		generatorVersion: 'waveguide-3',
 		solverVersion: 'scalar-fem-2d-1',
-		materialDBVersion: 'materials-1',
+		materialDBVersion: 'materials-2',
 		meshSettings: { kind: 'scalar-fem-2d-display' },
 		wavelengthUm: a.wavelengthUm,
 		a: { mfdXUm: a.dimensions.widthUm, mfdYUm: a.dimensions.heightUm },
@@ -201,6 +206,6 @@ function makeQuestion(
 		answer: { eta, ...loss },
 		bucket: bucketIndex(eta),
 		provenance: PROVENANCE,
-		view: { a: viewA, b: viewB, explanation, note: 'Scalar quasi-TE FEM fields; experimental, not full-vector.' }
+		view: { a: viewA, b: viewB, explanation, note }
 	};
 }

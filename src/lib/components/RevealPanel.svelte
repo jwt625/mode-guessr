@@ -50,6 +50,10 @@
 
 	<p class="dominant">{explanation.sentence}</p>
 
+	{#if question.view?.note}
+		<p class="note">{question.view.note}</p>
+	{/if}
+
 	{#if exactZero}
 		<p class="note">
 			Exact zero overlap: mismatch loss is infinite (∞). The 60 dB floor above is a scoring

@@ -157,6 +157,61 @@
 		ctx.setLineDash([]);
 	}
 
+	const INDEX_MIN = 1.0;
+	const INDEX_MAX = 3.6;
+	// Inset occupies 1/4 x 1/4 of the field plot; same extent/aspect as the field
+	// so the drawn stack lines up with the mode above it.
+	const INSET_FRACTION = 0.25;
+	const INSET_MARGIN = 6;
+
+	/** Draw the index cross-section (waveguide geometry) in the top-left corner. */
+	function drawGeometryInset(
+		ctx: CanvasRenderingContext2D,
+		v: StoredFieldView,
+		extent: ReturnType<typeof extentFor>,
+		width: number,
+		height: number,
+		ratio: number
+	) {
+		const ix = INSET_MARGIN * ratio;
+		const iy = INSET_MARGIN * ratio;
+		const iw = width * INSET_FRACTION;
+		const ih = height * INSET_FRACTION;
+		const colorOf = (n: number) => {
+			const [r, g, b] = colormapRGB('viridis', (n - INDEX_MIN) / (INDEX_MAX - INDEX_MIN));
+			return `rgb(${r},${g},${b})`;
+		};
+		const toX = (x: number) => ix + ((x - extent.x0) / (extent.x1 - extent.x0)) * iw;
+		const toY = (y: number) => iy + ((extent.y1 - y) / (extent.y1 - extent.y0)) * ih;
+		ctx.save();
+		ctx.beginPath();
+		ctx.rect(ix, iy, iw, ih);
+		ctx.clip();
+		ctx.fillStyle = colorOf(v.backgroundIndex);
+		ctx.fillRect(ix, iy, iw, ih);
+		for (const region of v.indexRegions) {
+			const rx0 = Math.max(extent.x0, region.x0);
+			const rx1 = Math.min(extent.x1, region.x1);
+			const ry0 = Math.max(extent.y0, region.y0);
+			const ry1 = Math.min(extent.y1, region.y1);
+			if (rx1 <= rx0 || ry1 <= ry0) continue;
+			ctx.fillStyle = colorOf(region.index);
+			ctx.fillRect(toX(rx0), toY(ry1), toX(rx1) - toX(rx0), toY(ry0) - toY(ry1));
+		}
+		ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+		ctx.lineWidth = ratio;
+		ctx.setLineDash([3 * ratio, 2 * ratio]);
+		ctx.strokeRect(toX(v.core.x0), toY(v.core.y1), toX(v.core.x1) - toX(v.core.x0), toY(v.core.y0) - toY(v.core.y1));
+		ctx.setLineDash([]);
+		ctx.restore();
+		ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+		ctx.lineWidth = ratio;
+		ctx.strokeRect(ix, iy, iw, ih);
+		ctx.fillStyle = 'rgba(255,255,255,0.9)';
+		ctx.font = `${9 * ratio}px monospace`;
+		ctx.fillText('n', ix + 4 * ratio, iy + 11 * ratio);
+	}
+
 	let layers: { sig: string; a: HTMLCanvasElement; b: HTMLCanvasElement } | null = null;
 
 	function sharedExtent() {
@@ -192,6 +247,7 @@
 		ctx.clearRect(0, 0, width, height);
 		ctx.drawImage(showB ? layers.b : layers.a, 0, 0);
 		overlay(ctx, showB ? view.b : view.a, extent, width, height, ratio);
+		drawGeometryInset(ctx, showB ? view.b : view.a, extent, width, height, ratio);
 	}
 
 	function drawPaired(canvasEl: HTMLCanvasElement | undefined, v: StoredFieldView, other: StoredFieldView) {
@@ -211,6 +267,7 @@
 		ctx.clearRect(0, 0, width, height);
 		ctx.drawImage(layer, 0, 0);
 		overlay(ctx, v, extent, width, height, ratio);
+		drawGeometryInset(ctx, v, extent, width, height, ratio);
 	}
 
 	function drawIntegrand() {
@@ -298,7 +355,8 @@
 			</div>
 			<div class="stage"><canvas bind:this={canvas}></canvas></div>
 			<p class="hint">
-				Shared µm extent and color scale when selected; dashed line = core outline. Space toggles.
+				Shared µm extent and color scale when selected; dashed line = core outline; top-left inset = index
+				cross-section. Space toggles.
 				{reducedMotion ? ' Auto-flash is off (reduced-motion preference).' : ''}
 			</p>
 		</div>

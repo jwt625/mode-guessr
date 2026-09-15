@@ -14,6 +14,7 @@ Date: 2026-09-13. Preserve [000-initial-discussion.md](000-initial-discussion.md
 | 008 | [Game: coverage and advanced modes](game-design/008-content-and-advanced-modes.md) | Required 20 cases; advanced backlog |
 | 009 | [Coding: implementation record](coding/009-foundation-results.md) | What was built and measured in this pass |
 | 010 | [Coding: player feedback round](coding/010-player-feedback-round.md) | Gallery streaming, 10-question speedrun, 2 Hz toggle, tracked Submit, field shortcuts |
+| 011 | [Knowledge: hybrid BTO/TFLN waveguides](knowledge-base/011-hybrid-ferroelectric-waveguides.md) | Eight proposed stack families, paper extraction, config, and geometry/material validation handoff; no solver implementation |
 
 Execution order: C1 foundation → C2 playable Gaussian speedrun → C3 validated vector solver → C4 numerical scenarios → C5 vector/heterogeneous curriculum → C6 adaptive/optimization modes. Cache work is front-loaded within C1 to make examples concrete. This pass implements the data/analytic/cache foundation, not the entire game or an unvalidated vector solver.
 

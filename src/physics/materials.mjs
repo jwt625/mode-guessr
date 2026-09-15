@@ -5,7 +5,7 @@
  * Process-specific indices (SiN, LN) are explicitly flagged as placeholders
  * and are not eligible for released answers until K2.2 ties them to data.
  */
-export const MATERIAL_DB_VERSION = 'materials-1';
+export const MATERIAL_DB_VERSION = 'materials-2';
 
 function sellmeier(terms) {
 	return (um) => {
@@ -64,6 +64,24 @@ export const MATERIALS = {
 		validityUm: [0.4, 4.0],
 		source: 'Isotropic proxy only; K2.5 requires crystal cut and tensor axes',
 		n: () => 2.21
+	},
+	bto: {
+		id: 'bto',
+		name: 'Barium titanate (isotropic screening proxy, placeholder)',
+		kind: 'isotropic-proxy',
+		status: 'placeholder-process-specific',
+		validityUm: [1.5, 1.6],
+		source: 'n=2.38 transferred-film optical value from Tao et al. 2024 (K011 S1); principal-axis tensor and domain state unresolved',
+		n: () => 2.38
+	},
+	lno: {
+		id: 'lno',
+		name: 'Lithium niobate (scalar screening proxy, placeholder)',
+		kind: 'isotropic-proxy',
+		status: 'placeholder-process-specific',
+		validityUm: [1.5, 1.6],
+		source: 'n=2.211 ordinary index from Chen et al. 2022 (K011 S5); a full crystal-to-solver tensor is required before release',
+		n: () => 2.211
 	}
 };
 
