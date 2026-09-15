@@ -12,6 +12,10 @@ const config = {
 			precompress: false,
 			strict: true
 		}),
+		paths: {
+			// Deployed as a project page at https://outside5sigma.com/mode-guessr
+			base: process.env.NODE_ENV === 'production' ? '/mode-guessr' : ''
+		},
 		alias: {
 			$foundation: 'src'
 		}
